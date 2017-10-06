@@ -1,0 +1,99 @@
+<h3>选课管理</h3>
+<table class="table studentCourseData table-bordered">
+  <thead>
+    <tr>
+      <th>编号</th>
+      <th>成绩</th>
+      <th>学生编号</th>
+      <th>课程编号</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+  </tbody>
+</table>
+
+<div>
+  <button class="modify btn btn-danger btn-sm">修改</button>
+  <button class="save btn btn-danger btn-sm">添加</button>
+  <button class="btn btn-danger btn-sm">删除</button>
+</div>
+
+
+
+<div class="modal fade " >
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="gridSystemModalLabel">添加选课信息</h4>
+      </div>
+      <div class="modal-body">
+        <form action="" class="studentCourseForm">
+          <input type="hidden" name="id" value="">
+          编号 <input type="text" name="name"> <br>
+          成绩  <input type="text" name="grade"> <br>
+          学生编号 <input type="text" name="student_id"> <br>
+          课程编号<input type="text" name="course_id"><br>
+          <input type="submit">
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button type="button" class="btn  btn-primary saveBtn">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+  $(function(){
+    $.getJSON('/studentCourse/findAll',function(data){
+      $('.studentCourseData tbody').empty()
+      data.forEach(function(item){
+        var newTr = $('<tr>'
+          +'<td> <input type="checkbox" value="'+item.id+'"> </td>'
+          +'<td>'+item.grade+'</td>'
+          +'<td>'+item.student_id+'</td>'
+          +'<td>'+item.course_id+'</td>'
+        +'</tr>')
+        $('.studentCourseData tbody').append(newTr)
+      });
+    });
+    
+
+    //为保存按钮绑定事件
+    $('button.save').off();
+    $('button.save').on("click",function(){
+        $('.modal').modal('show');
+    });
+
+    确认保存
+    $('.saveBtn').off();
+    $('.saveBtn').on('click',function(){
+      var id = $('.studentCourseForm input[name=id]').val();
+      var grade = $('.studentCourseForm input[name=grade]').val();
+      var student_id = $('.studentCourseForm input[name=student_id]').val();
+      var course_id = $('.studentCourseForm input[name=course_id]').val();
+      var newStudentCourse = {
+        id:id,
+        grade:grade,  
+        student_id:student_id,
+        course_id:course_id
+      };
+     
+      $.ajax('studentCourse/save',{
+        'data':newStudentCourse,
+        'method':'POST',
+        'content-Type':'application/json',
+        success:function(data){
+          console.log(data);
+          $('.modal').modal('hide');
+        }
+      });
+    });
+
+  })
+
+</script>

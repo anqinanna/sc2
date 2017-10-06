@@ -1,0 +1,98 @@
+<h3>班级管理</h3>
+<table class="table classData table-bordered">
+  <thead>
+    <tr>
+      <th>编号</th>
+      <th>班级名</th>
+      <th>创建时间</th>
+      <th>教师编号</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+  </tbody>
+</table>
+
+<div>
+  <button class="modify btn btn-danger btn-sm">修改</button>
+  <button class="save btn btn-danger btn-sm">添加</button>
+  <button class="btn btn-danger btn-sm">删除</button>
+</div>
+
+
+
+<div class="modal fade " >
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="gridSystemModalLabel">添加班级信息</h4>
+      </div>
+      <div class="modal-body">
+        <form action="" class="classForm">
+          <input type="hidden" name="id" value="">
+          班级名 <input type="text" name="name"> <br>
+          创建时间  <input type="text" name="createDate"> <br>
+          教师编号 <input type="text" name="teacher_id"> <br>
+          <input type="submit">
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button type="button" class="saveBtn btn  btn-danger ">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+  $(function(){
+    $.getJSON('/clazz/findAll',function(data){
+      $('.classData tbody').empty()
+      data.forEach(function(item){
+        var newTr = $('<tr>'
+          +'<td> <input type="checkbox" value="'+item.id+'"> </td>'
+          +'<td>'+item.name+'</td>'
+          +'<td>'+item.createDate.slice(0,item.birth.indexOf('T'))+'</td>'
+          +'<td>'+item.teacher_id+'</td>'
+        +'</tr>')
+        $('.classData tbody').append(newTr)
+      });
+    });
+    
+
+    //为保存按钮绑定事件
+    $('button.save').off();
+    $('button.save').on("click",function(){
+        $('.modal').modal('show');
+    });
+
+    //确认保存
+    $('.saveBtn').off();
+    $('.saveBtn').on('click',function(){
+      var id = $('.classForm input[name=id]').val();
+      var name = $('.classForm input[name=name]').val();
+      var createDate = $('.classForm input[name=createDate]').val();
+      var teacher_id = $('.classForm input[name=teacher_id]').val();
+      var newClass = {
+        id:id,
+        name:name,
+        createDate:createDate,  
+        teacher_id:teacher_id
+      };
+      $.ajax('clazz/save',{
+       'data':newClass,
+        'method':'POST',
+        'content-Type':'application/json',
+        success:function(data){
+          console.log(data);
+          $('.modal').modal('hide');
+          $('.navleft dd').eq(0).trigger('click');
+        }
+      });
+    });
+
+  })
+
+</script>

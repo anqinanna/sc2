@@ -1,0 +1,94 @@
+<h3>课程管理</h3>
+<hr>
+<table class="table courseData table-bordered">
+  <thead>
+    <tr>
+      <th>编号</th>
+      <th>课程名</th>
+      <th>学分</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+  </tbody>
+</table>
+
+<div>
+  <button class="modify btn btn-danger btn-sm">修改</button>
+  <button class="save btn btn-danger btn-sm">添加</button>
+  <button class="btn btn-danger btn-sm">删除</button>
+</div>
+
+
+
+<div class="modal fade " >
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="gridSystemModalLabel">添加课程信息</h4>
+      </div>
+      <div class="modal-body">
+        <form action="" class="courseForm">
+          <input type="hidden" name="id" value="">
+          课程名 <input type="text" name="name"> <br>
+          学分 <input type="text" name="credit"> <br>
+          <input type="submit">
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button type="button" class="btn  btn-primary saveBtn">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+  $(function(){
+    $.getJSON('/course/findAll',function(data){
+      $('.courseData tbody').empty()
+      data.forEach(function(item){
+        var newTr = $('<tr>'
+          +'<td> <input type="checkbox" value="'+item.id+'"> </td>'
+          +'<td>'+item.name+'</td>'
+          +'<td>'+item.credit+'</td>'
+        +'</tr>')
+        $('.courseData tbody').append(newTr)
+      });
+    });
+    
+
+    //为添加按钮绑定事件
+    $('button.save').off();
+    $('button.save').on("click",function(){
+        $('.modal').modal('show');
+    });
+
+    //确认保存
+    $('.saveBtn').off();
+    $('.saveBtn').on('click',function(){
+      var id = $('.courseForm input[name=id]').val();
+      var name = $('.courseForm input[name=name]').val();
+      var credit = $('.courseForm input[name=credit]').val();
+      var newCourse = {
+        id:id,
+        name:name,
+        credit:credit
+      };
+     
+      $.ajax('course/save',{
+        	
+        'method':'POST',
+        'content-Type':'application/json',
+        success:function(data){
+          console.log(data);
+          $('.modal').modal('hide');
+        }
+      });
+    });
+
+  })
+
+</script>

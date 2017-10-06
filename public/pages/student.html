@@ -1,0 +1,103 @@
+<h3>学生管理</h3>
+<table class="table studentData table-bordered">
+  <thead>
+    <tr>
+      <th>编号</th>
+      <th>姓名</th>
+      <th>性别</th>
+      <th>生日</th>
+      <th>班级</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+  </tbody>
+</table>
+
+<div>
+  <button class="modify btn btn-danger btn-sm">修改</button>
+  <button class="save btn btn-danger btn-sm">添加</button>
+  <button class="btn btn-danger btn-sm">删除</button>
+</div>
+
+
+
+<div class="modal fade " >
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="gridSystemModalLabel">添加学生信息</h4>
+      </div>
+      <div class="modal-body">
+        <form action="" class="studentForm">
+          <input type="hidden" name="id" value="">
+          姓名 <input type="text" name="name"> <br>
+          性别  <input type="text" name="gender"> <br>
+          生日 <input type="text" name="birth"> <br>
+          班级<input type="text" name="class_id"><br>
+          <input type="submit">
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button type="button" class="saveBtn btn  btn-danger ">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+  $(function(){
+    $.getJSON('/student/findAll',function(data){
+      $('.studentData tbody').empty()
+      data.forEach(function(item){
+        var newTr = $('<tr>'
+          +'<td> <input type="checkbox" value="'+item.id+'"> </td>'
+          +'<td>'+item.name+'</td>'
+          +'<td>'+item.gender+'</td>'
+          +'<td>'+item.birth.slice(0,item.birth.indexOf('T'))+'</td>'
+          +'<td>'+item.clazz_id+'</td>'
+        +'</tr>')
+        $('.studentData tbody').append(newTr)
+      });
+    });
+    
+
+    //为保存按钮绑定事件
+    $('button.save').off();
+    $('button.save').on("click",function(){
+        $('.modal').modal('show');
+    });
+
+    //确认保存
+    $('.saveBtn').off();
+    $('.saveBtn').on('click',function(){
+      var id = $('.studentForm input[name=id]').val();
+      var name = $('.studentForm input[name=name]').val();
+      var gender = $('.studentForm input[name=gender]').val();
+      var birth = $('.studentForm input[name=birth]').val();
+      var clazz_id = $('.studentForm input[name=clazz_id]').val();
+      var newStudent = {
+        id:id,
+        name:name,
+        gender:gender,  
+        birth:birth,
+        clazz_id:class_id
+      };
+      $.ajax('student/save',{
+       'data':newStudent,
+        'method':'POST',
+        'content-Type':'application/json',
+        success:function(data){
+          console.log(data);
+          $('.modal').modal('hide');
+          $('.navleft dd').eq(0).trigger('click');
+        }
+      });
+    });
+
+  })
+
+</script>
